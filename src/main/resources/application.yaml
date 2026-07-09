@@ -1,0 +1,3 @@
+spring:
+  application:
+    name: 4iren-auth

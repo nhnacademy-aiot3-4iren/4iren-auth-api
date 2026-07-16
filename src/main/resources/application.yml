@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: 4iren-auth
+
+logging:
+  level:
+    root: error
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true

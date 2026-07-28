@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
-
 public class AuthServiceImpl implements AuthService {
 
     private final UserClient userClient;
@@ -63,11 +62,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void logout(String accessTocken) {
         //access토큰에서 유저 아이디 추출
-        String userId= jwtProvider.getUserIdFromToken(accessTocken);
+//        String userId= jwtProvider.getUserIdFromToken(accessTocken);
 
         //Redis에서 해당 유저의 리프레시 토큰 삭제
-        String redisKey="refreshToken:" +userId;
-        redisTemplate.delete(redisKey);
+//        String redisKey="refreshToken:" +userId;
+//        redisTemplate.delete(redisKey);
 
         //블랙리스트에 엑세스 토큰 저장(TTL:엑세스 토큰의 남은 유효기간)
 

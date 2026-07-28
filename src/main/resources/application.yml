@@ -1,11 +1,45 @@
-spring:
+#서버 실행에 필요한 DB, Redis, 서버포트, JWT키, 외부 API 주소 등의 핵심 설정 정보를 모아둔 설정 설명서
+
+spring: #스프링 핵심 설정
   application:
-    name: 4iren-auth
+    name: 4iren-auth #이 서비스의 고유 이름. 유레카서비스나 로그시스템에서 이 서비스를 구분하는데 이 이름이 쓰임.
+    datasource: #MySQL 데베 연동
+      url: jdbc:mysql://10.116.64.14:13306/aiot03_team4?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
+      username: aiot03_team4
+      password: ${MYSQL_PASSWORD}
+
+
+    data:
+      redis:
+        host: 10.116.64.14
+        port: 6379
+        password: "${REDIS_PASSWORD}"
+        database: 22
+
+
+    jpa:
+      hibernate:
+        ddl-auto: update
+      show-sql: true
+      properties:
+        hibernate:
+          format_sql: true
 
 logging:
   level:
     root: error
 
+server:
+  port: 8083
+
+jwt:
+  secret-key: "l7lD/bDeX1yqkdIWdecWa0QvHDLBA0LDAwwFKXYABJkvOSBRCv4Gotox6sATdG7pjoFV563J+CZ9lG54ktkPig==" #JWT토큰을 암호화하고 서명할때 쓰는 고유 비밀키 (BASE64 문자열)
+  access-token-expiration: 3600000  #1시간 (1,000ms *60초 *60분)
+  refresh-token-expiration: 1209600000  #2주 - 14일 (1,000ms *60초 *60분 *24시간 *14일)
+
+external:
+  account-api:
+    url: http://localhost:8081/api/accounts
 eureka:
   client:
     service-url:

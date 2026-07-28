@@ -1,8 +1,8 @@
 package com.nhnacademy.userauthapi.controller;
 
-import com.nhnacademy.userauthapi.dto.LoginRequest;
 import com.nhnacademy.userauthapi.dto.TokenResponse;
 
+import com.nhnacademy.userauthapi.dto.login.LoginRequest;
 import com.nhnacademy.userauthapi.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

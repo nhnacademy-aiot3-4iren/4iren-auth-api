@@ -37,9 +37,6 @@ jwt:
   access-token-expiration: 3600000  #1시간 (1,000ms *60초 *60분)
   refresh-token-expiration: 1209600000  #2주 - 14일 (1,000ms *60초 *60분 *24시간 *14일)
 
-external:
-  account-api:
-    url: http://localhost:8081/api/accounts
 eureka:
   client:
     service-url:

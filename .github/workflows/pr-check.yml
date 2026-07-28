@@ -1,8 +1,10 @@
-name: PR Code Quality Check
+name: PR Code Quality Check & Telegram Notification
 
 # 스크립트 실행 시기
 on:
   pull_request:
+    # pr 생성, pr 업데이트(코드 변경), 리뷰어 지정 시 발생
+    types: [opened, synchronize, review_requested]
     # develop이나 main에 pr을 하려고 할때
     branches: [ "main", "develop" ]
 
@@ -11,6 +13,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Telegram으로 PR 알림 보내기
+        # PR을 처음 생성하거나 리뷰어를 지정했을 때만 텔레그램 알림 전송
+        if: github.event.action == 'opened' || github.event.action == 'review_requested'
+        uses: F2had/pr-telegram-action@v1.0.0
+        with:
+          bot_token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
+
       - name: 코드 가져오기
         uses: actions/checkout@v3
 

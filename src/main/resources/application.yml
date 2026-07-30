@@ -13,7 +13,7 @@ spring: #스프링 핵심 설정
       redis:
         host: 10.116.64.14
         port: 6379
-        password: "${REDIS_PASSWORD}"
+        password: ${REDIS_PASSWORD}
         database: 22
 
 
@@ -27,15 +27,15 @@ spring: #스프링 핵심 설정
 
 logging:
   level:
-    root: error
+    root: info
 
 server:
   port: 8083
 
 jwt:
-  secret-key: "l7lD/bDeX1yqkdIWdecWa0QvHDLBA0LDAwwFKXYABJkvOSBRCv4Gotox6sATdG7pjoFV563J+CZ9lG54ktkPig==" #JWT토큰을 암호화하고 서명할때 쓰는 고유 비밀키 (BASE64 문자열)
   access-token-expiration: 3600000  #1시간 (1,000ms *60초 *60분)
   refresh-token-expiration: 1209600000  #2주 - 14일 (1,000ms *60초 *60분 *24시간 *14일)
+  secret-key: ${JWT_SECRET_KEY}
 
 eureka:
   client:

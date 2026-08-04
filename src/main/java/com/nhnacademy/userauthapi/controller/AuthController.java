@@ -26,9 +26,9 @@ public class AuthController {
 
         //로그인 성공-> 엑세스 토큰은 응답 본문, 리프레시 토큰은 HttpOnly 쿠키로 전달
         ResponseCookie refreshTokenCookie=ResponseCookie.from("refreshToken",tokenResponse.refreshToken())
-                .httpOnly(true) //자바 스크립트에서 접근 불가능하도록 설정
-                .secure(false) // HTTPS환경: true, 개발환경:false
-                .path("/") //모든 경로에서 쿠키가 전송되도록 설정
+                .httpOnly(true)                     //자바 스크립트에서 접근 불가능하도록 설정
+                .secure(false)                      // HTTPS환경: true, 개발환경:false
+                .path("/")                          //모든 경로에서 쿠키가 전송되도록 설정
                 .maxAge(14*24*60*60) //14일동안 유효하도록 설정
                 .build();
 

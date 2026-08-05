@@ -44,6 +44,10 @@ jobs:
       - name: Maven 실행 권한 부여
         run: chmod +x ./mvnw
 
+      # 명령어 옵션
+      # -Djacoco.haltOnFailure: Jacoco 커버리지 검사 (60%)
+      # -Dsonar.qualitygate.wait: Sonarqube 퀄리티 게이트 검사 (80%)
+
       # develop 브랜치 소나큐브 적용 (실패 시 최대 3회 재시도)
       - name: 코드 빌드 및 소나큐브 분석 (Develop)
         if: github.base_ref == 'develop'

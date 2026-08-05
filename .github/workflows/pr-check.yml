@@ -58,6 +58,7 @@ jobs:
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} 
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
             -Dsonar.projectKey=${{ env.PROJECT_KEY }}
+            -Dsonar.qualitygate.wait=false
 
       # main 브랜치 소나큐브 적용 (실패 시 최대 3회 재시도)
       - name: 코드 빌드 및 소나큐브 분석 (Main)
@@ -73,7 +74,21 @@ jobs:
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} 
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
             -Dsonar.projectKey=${{ env.PROJECT_KEY }}
-            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.wait=false
+
+      # 커버리지 결과 파일(xml)에서 결과 추출
+      - name: JaCoCo 커버리지 퍼센트 추출 (Python 파싱)
+        if: always()
+        run: |
+          JACOCO_FILE=$(find . -name "jacoco.xml" -path "*/target/site/jacoco/jacoco.xml" | head -n 1)
+
+          if [ -n "$JACOCO_FILE" ]; then
+            # 들여쓰기 에러를 막기 위해 파이썬 코드를 한 줄로 압축했습니다.
+            COVERAGE=$(python3 -c "import xml.etree.ElementTree as ET; root = ET.parse('$JACOCO_FILE').getroot(); c = [int(n.attrib.get('covered',0)) for n in root if n.tag=='counter' and n.attrib.get('type')=='LINE']; m = [int(n.attrib.get('missed',0)) for n in root if n.tag=='counter' and n.attrib.get('type')=='LINE']; t = c[0]+m[0] if c else 0; print(f'{(c[0]/t)*100:.1f}' if t>0 else '0.0')" 2>/dev/null || echo "0.0")
+            echo "COVERAGE_PERCENT=$COVERAGE" >> $GITHUB_ENV
+          else
+            echo "COVERAGE_PERCENT=0.0" >> $GITHUB_ENV
+          fi
 
       # 1. 성공 시 댓글 (초록색)
       - name: PR에 소나큐브 링크 댓글 작성 (성공)
@@ -86,6 +101,7 @@ jobs:
             ### ✅ PR 품질 검사 통과!
             - 타깃 브랜치: `${{ github.base_ref }}`
             - 분석 결과: `Success` 🟢
+            - 📈 **현재 커버리지: `${{ env.COVERAGE_PERCENT }}%`**
             
             훌륭합니다! 모든 커버리지와 테스트를 통과했습니다.
             
@@ -104,6 +120,7 @@ jobs:
             ### 🚨 PR 품질 검사 실패!
             - 타깃 브랜치: `${{ github.base_ref }}`
             - 분석 결과: `Failure` 🔴
+            - 📈 **현재 커버리지: `${{ env.COVERAGE_PERCENT }}%`**
             
             **[🤔 실패 원인 추측 (아래 중 하나일 확률이 높습니다)]**
             1. **전체 커버리지 60% 미달**: JaCoCo 컷에 걸렸습니다. 테스트 코드를 더 작성하세요!

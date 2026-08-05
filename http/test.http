@@ -1,0 +1,17 @@
+### login
+POST localhost:8084/api/auth/login
+Content-Type: application/json
+
+{
+  "userLoginId": "user",
+  "userPassword": "user123"
+}
+
+### logout
+POST localhost:8084/api/auth/logout
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwibG9naW4taWQiOiJ1c2VyIiwicm9sZSI6IlJPTEVfVVNFUiIsImlhdCI6MTc4NTg5NDI3NSwiZXhwIjoxNzg1ODk3ODc1fQ.jTCoo6IU18Rovwlgeypo7j5JB53EKDZ2QeYfaJ8IoMuZhk4F-UMRxvcuJZfxX8qjyfUxbEM5zIXbSPgbIUttpA
+
+### refresh
+POST localhost:8084/api/auth/refresh
+Cookie: refreshToken=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzg1ODk0MDkzLCJleHAiOjE3ODcxMDM2OTN9.2899WnqVJAHklqfFPFWh3Zp7pERBbONrFP7TYZmx0SWH5blIQrSLiQo08UfDn9UPhDgW3ZrOWBsSMxM3Yb7O5Q
+Content-Type: application/json

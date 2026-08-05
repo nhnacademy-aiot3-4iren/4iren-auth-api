@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Base64;
 import java.util.Date;
 
 //토큰 생성, 검증, 파싱을 담당하는 클래스
@@ -29,12 +28,13 @@ public class JwtProvider {
     }
 
     //access token 생성
-    public String createAccessToken(String userId, String role){
+    public String createAccessToken(Long userId, String userLoginId, String role){
         long now=System.currentTimeMillis();
         Date accessTokenExpiration=new Date(now+jwtProperties.getAccessTokenExpiration());
 
         return Jwts.builder()
-                .subject(userId)
+                .subject(userId.toString())
+                .claim("login-id", userLoginId)
                 .claim("role",role)
                 .issuedAt(new Date(now))
                 .expiration(accessTokenExpiration)
@@ -44,12 +44,12 @@ public class JwtProvider {
 
 
     //refresh token 생성
-    public String createRefreshToken(String userId){
+    public String createRefreshToken(Long userId){
         long now=System.currentTimeMillis();
         Date refreshTokenExpiration=new Date(now +jwtProperties.getRefreshTokenExpiration());
 
         return Jwts.builder()
-                .subject(userId)
+                .subject(userId.toString())
                 .issuedAt(new Date(now))
                 .expiration(refreshTokenExpiration)
                 .signWith(secretKey)
@@ -69,8 +69,13 @@ public class JwtProvider {
     //***** 클레임 : JWT 표준 스펙용어. Payload에 담기는 key-value형태의 정보 한조각을 공식적으로 클레임이라고 부름.
 
     //토큰에서 userId 추출
-    public String getUserIdFromToken(String token){
-        return getClaims(token).getSubject();
+    public Long getUserIdFromToken(String token){
+        return Long.valueOf(getClaims(token).getSubject());
+    }
+
+    //토큰에서 로그인 ID 추출
+    public String getLoginIdFromToken(String token) {
+        return getClaims(token).get("login-id", String.class);
     }
 
     //토큰에서 Role 추출

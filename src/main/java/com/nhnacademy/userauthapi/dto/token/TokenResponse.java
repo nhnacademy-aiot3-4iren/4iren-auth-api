@@ -1,4 +1,4 @@
-package com.nhnacademy.userauthapi.dto;
+package com.nhnacademy.userauthapi.dto.token;
 
 public record TokenResponse (
     String accessToken,

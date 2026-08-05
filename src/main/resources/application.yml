@@ -1,16 +1,6 @@
 spring:
   application:
     name: 4iren-auth
-
-logging:
-  level:
-    root: error
-
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
-    register-with-eureka: true
-    fetch-registry: true
-  instance:
-    prefer-ip-address: true
+  config:
+    # 로컬 환경에서 8888 포트로 config server를 사용
+    import: ${CONFIG_SERVER_URL:optional:configserver:http://localhost:8888}

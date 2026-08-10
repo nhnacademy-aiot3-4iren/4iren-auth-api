@@ -17,6 +17,8 @@ public class JwtProperties {
     private String secretKey;
     private long accessTokenExpiration;
     private long refreshTokenExpiration;
+    private String refreshPrefix;
+    private String blacklistPrefix;
 
     @PostConstruct
     public void printProperties() {
@@ -24,6 +26,8 @@ public class JwtProperties {
         log.info("SecretKey 셋팅 여부: {}", secretKey != null ? "정상 로드됨" : "NULL");
         log.info("Access 토큰 만료시간: {}", accessTokenExpiration);
         log.info("Refresh 토큰 만료시간: {}", refreshTokenExpiration);
+        log.info("Refresh 토큰 접두사: {}", refreshPrefix);
+        log.info("블랙리스트 토큰 접두사: {}", blacklistPrefix);
         log.info("====================================");
     }
 }

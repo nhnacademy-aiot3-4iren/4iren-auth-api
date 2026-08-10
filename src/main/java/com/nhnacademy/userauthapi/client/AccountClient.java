@@ -5,15 +5,12 @@ import com.nhnacademy.userauthapi.dto.login.LoginRequest;
 import com.nhnacademy.userauthapi.dto.login.LoginResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name="4iren-account", path="/api/account")
 public interface AccountClient {
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request);
 
     @GetMapping("/{user-id}")

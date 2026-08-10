@@ -86,6 +86,7 @@ class AuthServiceImplTest {
         given(jwtProvider.createRefreshToken(eq(userId))).willReturn("mockRefreshToken");
         // [Mock 동작 정의 C] JwtProperties에서 만료 시간을 물어보면 1209600000ms (2주)를 반환하도록 세팅
         given(jwtProperties.getRefreshTokenExpiration()).willReturn(1209600000L);
+        given(jwtProperties.getRefreshPrefix()).willReturn("refreshToken:");
 
 
         //***When. 실행. 실제 테스트 대상인 authservice.login()을 호출함
@@ -116,6 +117,7 @@ class AuthServiceImplTest {
 
         //Jwt provider가 토큰에서 유저 ID 및 남은 만료 시간을 제대로 반환하도록 Mocking 설정
         given(jwtProvider.getUserIdFromToken(accessToken)).willReturn(userId);
+        given(jwtProperties.getRefreshPrefix()).willReturn("refreshToken:");
 
         //when
         authService.logout(accessToken);
@@ -141,6 +143,7 @@ class AuthServiceImplTest {
         //JwtProvider 토큰 검증 및 유저 ID 추출 세팅
         given(jwtProvider.validateToken(oldRefreshToken)).willReturn(true);
         given(jwtProvider.getUserIdFromToken(oldRefreshToken)).willReturn(userId);
+        given(jwtProperties.getRefreshPrefix()).willReturn("refreshToken:");
 
         //redis에서 기존 리프레시 토큰 조회 세팅
         given(valueOperations.get("refreshToken:" +userId)).willReturn(oldRefreshToken);

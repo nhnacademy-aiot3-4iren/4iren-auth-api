@@ -1,6 +1,7 @@
 package com.nhnacademy.userauthapi.config;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -28,13 +29,13 @@ public class JwtProvider {
     }
 
     //access token 생성
-    public String createAccessToken(Long userId, String userLoginId, String role){
+    public String createAccessToken(Long userId, String loginId, String role){
         long now=System.currentTimeMillis();
         Date accessTokenExpiration=new Date(now+jwtProperties.getAccessTokenExpiration());
 
         return Jwts.builder()
                 .subject(userId.toString())
-                .claim("login-id", userLoginId)
+                .claim("login-id", loginId)
                 .claim("role",role)
                 .issuedAt(new Date(now))
                 .expiration(accessTokenExpiration)
@@ -59,11 +60,17 @@ public class JwtProvider {
 
     //토큰에서 클레임(정보) 추출
     public Claims getClaims(String token){
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            // 만료되지 않은 토큰에서 클레임 빼내기
+            return Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            // 만료된 토큰에서 클레임 빼내기
+            return e.getClaims();
+        }
 
     }
     //***** 클레임 : JWT 표준 스펙용어. Payload에 담기는 key-value형태의 정보 한조각을 공식적으로 클레임이라고 부름.
@@ -97,11 +104,12 @@ public class JwtProvider {
     //토큰 검증-> 유효한 토큰인지, 만료되었는지 검사
     public boolean validateToken(String token){
         try{
-            getClaims(token);
-            return true;
+            // jwt 직접 파싱 시도
+            Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
+            return true;    // 성공 시, 유효한 토큰
         }catch (JwtException | IllegalArgumentException e){
             log.warn("Invalid JWT token:{}",e.getMessage());
-            return false;
+            return false;   // 실패 시, 훼손되거나 만료된 토큰
         }
     }
 

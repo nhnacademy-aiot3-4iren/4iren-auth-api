@@ -35,6 +35,7 @@ public class JwtProvider {
 
         return Jwts.builder()
                 .subject(userId.toString())
+                .id(java.util.UUID.randomUUID().toString())
                 .claim("login-id", loginId)
                 .claim("role",role)
                 .issuedAt(new Date(now))
@@ -111,6 +112,11 @@ public class JwtProvider {
             log.warn("Invalid JWT token:{}",e.getMessage());
             return false;   // 실패 시, 훼손되거나 만료된 토큰
         }
+    }
+
+    //토큰에서 JTI(고유 ID) 추출
+    public String getJtiFromToken(String token){
+        return getClaims(token).getId();
     }
 
 }

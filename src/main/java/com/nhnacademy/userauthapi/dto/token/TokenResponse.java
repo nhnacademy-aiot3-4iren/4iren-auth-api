@@ -2,6 +2,7 @@ package com.nhnacademy.userauthapi.dto.token;
 
 public record TokenResponse (
     String accessToken,
-    String refreshToken
+    String refreshToken,
+    Boolean firstLogin
 ){}
 

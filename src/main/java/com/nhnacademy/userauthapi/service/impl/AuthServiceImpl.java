@@ -7,7 +7,6 @@ import com.nhnacademy.userauthapi.dto.user.UserResponse;
 import com.nhnacademy.userauthapi.dto.token.TokenResponse;
 import com.nhnacademy.userauthapi.dto.login.LoginRequest;
 import com.nhnacademy.userauthapi.dto.login.LoginResponse;
-import com.nhnacademy.userauthapi.exception.LoginFailException;
 import com.nhnacademy.userauthapi.exception.RefreshTokenValidateException;
 import com.nhnacademy.userauthapi.service.AuthService;
 import feign.FeignException;
@@ -33,19 +32,11 @@ public class AuthServiceImpl implements AuthService {
     // 로그인
     @Override
     public TokenResponse login(LoginRequest req) {
-        LoginResponse resp;
-        try{
-            resp=accountClient.login(req).getBody();
-        } catch(FeignException e) {
-            if(e.status()==404 || e.status()==400) {
-                throw new LoginFailException("아이디 또는 비밀번호가 올바르지 않습니다.");
-            }
-            throw e;
-        }
+        LoginResponse resp=accountClient.login(req).getBody();
 
         Long userId = Objects.requireNonNull(resp).userId();
         String loginId = resp.loginId();
-        String role = "ROLE_" + resp.role();
+        String role = resp.role();
 
         //로그인 성공 시, JWT 액세스 토큰과 리프레시 토큰 발급
         String accessToken = jwtProvider.createAccessToken(userId, loginId, role);
@@ -55,7 +46,9 @@ public class AuthServiceImpl implements AuthService {
         String redisKey = jwtProperties.getRefreshPrefix() + userId;
         redisTemplate.opsForValue().set(redisKey, refreshToken, jwtProperties.getRefreshTokenExpiration(), TimeUnit.MILLISECONDS);
 
-        return new TokenResponse(accessToken, refreshToken);
+        boolean firstLogin=resp.firstLogin();
+
+        return new TokenResponse(accessToken, refreshToken, firstLogin);
     }
 
     //로그아웃
@@ -63,6 +56,7 @@ public class AuthServiceImpl implements AuthService {
     public void logout(String accessToken) {
         //access토큰에서 유저 아이디 추출
         Long userId = jwtProvider.getUserIdFromToken(accessToken);
+        String jti = jwtProvider.getJtiFromToken(accessToken);
 
         //Redis에서 해당 유저의 리프레시 토큰 삭제
         String redisKey = jwtProperties.getRefreshPrefix() + userId;
@@ -73,10 +67,26 @@ public class AuthServiceImpl implements AuthService {
 
         //남은 유효기간이 0보다 큰 경우에만 블랙리스트 등록(이미 만료된 토큰은 블랙리스트에 등록할 필요 없음)
         if (remainingMillsSeconds > 0) {
-            String key = jwtProperties.getBlacklistPrefix() + accessToken;
+            String key = jwtProperties.getBlacklistPrefix() + jti;
             redisTemplate.opsForValue().set(key, "logout", remainingMillsSeconds, TimeUnit.MILLISECONDS);
         }
-        log.info("유저 {} 로그아웃 처리 완료. 엑세스 토큰 블랙리스트 등록: {}, 남은 유효 기간: {}ms", userId, accessToken, TimeUnit.MILLISECONDS);
+        log.info("유저 {} 로그아웃 처리 완료. 엑세스 토큰 블랙리스트 등록(JTI): {}, 남은 유효 기간: {}ms", userId, jti, remainingMillsSeconds);
+    }
+
+    // 결제 완료 이후 액세스 토큰 비활성화
+    @Override
+    public void clearAccessToken(String accessToken) {
+        // 블랙리스트에 엑세스 토큰 저장 (TTL: 엑세스 토큰의 남은 유효기간)
+        long remainingMillisSeconds=jwtProvider.getRemainingTime(accessToken);
+        String jti = jwtProvider.getJtiFromToken(accessToken);
+
+        // 남은 유효시간이 0보다 큰 경우에만 블랙리스트 등록 (이미 만료된 토큰은 블랙리스트에 등록할 필요 없음)
+        if(remainingMillisSeconds>0) {
+            String key=jwtProperties.getBlacklistPrefix()+jti;
+            redisTemplate.opsForValue().set(key, "clear", remainingMillisSeconds, TimeUnit.MILLISECONDS);
+        }
+
+        log.info("액세스 토큰 블랙리스트 등록: {}, 남은 유효 기간: {}ms", jti, remainingMillisSeconds);
     }
 
 
@@ -120,6 +130,6 @@ public class AuthServiceImpl implements AuthService {
         String newAccessToken = jwtProvider.createAccessToken(userId, loginId, role);
 
         //새로운 토큰을 담은 응답 반환
-        return new TokenResponse(newAccessToken, refreshToken);
+        return new TokenResponse(newAccessToken, refreshToken, false);
     }
 }

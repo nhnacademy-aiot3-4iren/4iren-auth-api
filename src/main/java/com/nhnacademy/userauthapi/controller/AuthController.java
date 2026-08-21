@@ -34,7 +34,8 @@ public class AuthController {
                 .build();
 
         //엑세스 토큰만 응답 본문에 담아서 전달
-        TokenResponse resp=new TokenResponse(tokenResponse.accessToken(), null);
+        TokenResponse resp=new TokenResponse(tokenResponse.accessToken(),
+                null, tokenResponse.firstLogin());
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE,refreshTokenCookie.toString()) //리프레시 토큰을 HttpOnly 쿠키로 설정
@@ -74,9 +75,11 @@ public class AuthController {
         }
         TokenResponse tokenResponse=authService.refresh(refreshToken);
 
-        TokenResponse resp=new TokenResponse(tokenResponse.accessToken(),null);
+        TokenResponse resp=new TokenResponse(tokenResponse.accessToken(),null, false);
 
         return ResponseEntity.ok().body(resp);
     }
+
+
 
 }

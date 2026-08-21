@@ -75,7 +75,8 @@ class AuthServiceImplTest {
                 userId,
                 userLoginId,
                 userName,
-                role);
+                role,
+                true); // 추가된 firstLogin 필드
 
         // [Mock 동작 정의 A] AccountClient.login()이 실행되면 성공(200 OK)과 함께 loginResponse를 반환하도록 세팅
         given(accountClient.login(any(LoginRequest.class)))

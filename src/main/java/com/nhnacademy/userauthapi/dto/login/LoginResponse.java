@@ -5,5 +5,6 @@ public record LoginResponse (
         Long userId,
         String loginId,
         String name,
-        String role
+        String role,
+        Boolean firstLogin
 ) {}

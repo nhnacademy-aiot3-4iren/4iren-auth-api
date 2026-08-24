@@ -7,6 +7,7 @@ import com.nhnacademy.userauthapi.dto.user.UserResponse;
 import com.nhnacademy.userauthapi.dto.token.TokenResponse;
 import com.nhnacademy.userauthapi.dto.login.LoginRequest;
 import com.nhnacademy.userauthapi.dto.login.LoginResponse;
+import com.nhnacademy.userauthapi.exception.LoginFailException;
 import com.nhnacademy.userauthapi.exception.RefreshTokenValidateException;
 import com.nhnacademy.userauthapi.service.AuthService;
 import feign.FeignException;
@@ -32,7 +33,13 @@ public class AuthServiceImpl implements AuthService {
     // 로그인
     @Override
     public TokenResponse login(LoginRequest req) {
-        LoginResponse resp=accountClient.login(req).getBody();
+        LoginResponse resp;
+        try {
+            resp = accountClient.login(req).getBody();
+        } catch (FeignException.NotFound | FeignException.BadRequest | FeignException.Unauthorized e) {
+            log.error("Login failed from account-api: {}", e.getMessage());
+            throw new LoginFailException("아이디 또는 비밀번호가 올바르지 않습니다.");
+        }
 
         Long userId = Objects.requireNonNull(resp).userId();
         String loginId = resp.loginId();

@@ -7,6 +7,7 @@ import com.nhnacademy.userauthapi.dto.login.LoginRequest;
 import com.nhnacademy.userauthapi.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,9 @@ public class AuthController {
     private final AuthService authService;
     private final JwtProperties jwtProperties;
 
+    @Value("${app.cookie.secure:false}")
+    private boolean isSecureCookie;
+    
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest req)
     {
@@ -28,7 +32,7 @@ public class AuthController {
         //로그인 성공-> 엑세스 토큰은 응답 본문, 리프레시 토큰은 HttpOnly 쿠키로 전달
         ResponseCookie refreshTokenCookie=ResponseCookie.from("refreshToken",tokenResponse.refreshToken())
                 .httpOnly(true)                     //자바 스크립트에서 접근 불가능하도록 설정
-                .secure(false)                      // HTTPS환경: true, 개발환경:false
+                .secure(isSecureCookie)                      // HTTPS환경: true, 개발환경:false
                 .path("/")                          //모든 경로에서 쿠키가 전송되도록 설정
                 .maxAge(jwtProperties.getRefreshTokenExpiration()/1000) // 리프레쉬 토큰 유지 기간동안 유지
                 .build();
@@ -56,7 +60,7 @@ public class AuthController {
 
         ResponseCookie deleteCookie=ResponseCookie.from("refreshToken","")
                 .httpOnly(true)
-                .secure(false) //HTTPS 환경: true, 개발 환경: false
+                .secure(isSecureCookie) //HTTPS 환경: true, 개발 환경: false
                 .path("/")
                 .maxAge(0) //즉시 만료되도록 설정
                 .build();

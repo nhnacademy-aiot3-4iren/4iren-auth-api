@@ -153,7 +153,7 @@ class AuthServiceImplTest {
         given(accountClient.getUser(userId, userId)).willReturn(ResponseEntity.ok(userResponse));
 
         //새로운 토큰 생성 및 만료 시간 세팅
-        given(jwtProvider.createAccessToken(eq(userId), eq(userLoginId), eq("ROLE_"+role))).willReturn(newAccessToken);
+        given(jwtProvider.createAccessToken(eq(userId), eq(userLoginId), eq(role))).willReturn(newAccessToken);
 
         //when. 실행. 서비스의 refresh() 호출
         TokenResponse tokenResponse=authService.refresh(oldRefreshToken);

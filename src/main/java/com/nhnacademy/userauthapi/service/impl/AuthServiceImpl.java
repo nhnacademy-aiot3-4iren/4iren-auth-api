@@ -131,7 +131,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String loginId = user.loginId();
-        String role = "ROLE_" + user.role();
+        String role = user.role();
 
         //새로운 액세스 토큰과 리프레시 토큰 발급
         String newAccessToken = jwtProvider.createAccessToken(userId, loginId, role);

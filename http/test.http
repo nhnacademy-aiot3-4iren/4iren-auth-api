@@ -3,8 +3,8 @@ POST localhost:8084/api/auth/login
 Content-Type: application/json
 
 {
-  "loginId": "user",
-  "password": "user123"
+  "loginId": "owner",
+  "password": "1234"
 }
 
 ### logout

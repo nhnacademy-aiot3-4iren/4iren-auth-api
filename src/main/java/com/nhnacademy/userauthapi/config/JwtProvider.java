@@ -1,5 +1,6 @@
 package com.nhnacademy.userauthapi.config;
 
+import com.nhnacademy.userauthapi.config.properties.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;

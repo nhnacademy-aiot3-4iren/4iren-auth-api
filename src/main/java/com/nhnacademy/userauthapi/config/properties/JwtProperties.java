@@ -1,4 +1,4 @@
-package com.nhnacademy.userauthapi.config;
+package com.nhnacademy.userauthapi.config.properties;
 
 //application.yml에서 jwt관련 설정을 읽어오는 클래스임
 

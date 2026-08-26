@@ -9,7 +9,7 @@ public interface AuthService {
 
     void logout(String accessToken);
 
-    void clearAccessToken(String accessToken);
+    void invalidateJti(String jti);
 
     TokenResponse refresh(String refreshToken);
 

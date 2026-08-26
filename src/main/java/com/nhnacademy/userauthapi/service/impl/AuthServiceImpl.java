@@ -1,7 +1,7 @@
 package com.nhnacademy.userauthapi.service.impl;
 
 import com.nhnacademy.userauthapi.client.AccountClient;
-import com.nhnacademy.userauthapi.config.JwtProperties;
+import com.nhnacademy.userauthapi.config.properties.JwtProperties;
 import com.nhnacademy.userauthapi.config.JwtProvider;
 import com.nhnacademy.userauthapi.dto.user.UserResponse;
 import com.nhnacademy.userauthapi.dto.token.TokenResponse;
@@ -80,22 +80,17 @@ public class AuthServiceImpl implements AuthService {
         log.info("유저 {} 로그아웃 처리 완료. 엑세스 토큰 블랙리스트 등록(JTI): {}, 남은 유효 기간: {}ms", userId, jti, remainingMillsSeconds);
     }
 
-    // 결제 완료 이후 액세스 토큰 비활성화
+    // JTI만으로 즉시 비활성화 (RabbitMQ 이벤트용)
     @Override
-    public void clearAccessToken(String accessToken) {
-        // 블랙리스트에 엑세스 토큰 저장 (TTL: 엑세스 토큰의 남은 유효기간)
-        long remainingMillisSeconds=jwtProvider.getRemainingTime(accessToken);
-        String jti = jwtProvider.getJtiFromToken(accessToken);
+    public void invalidateJti(String jti) {
+        if (jti != null && !jti.isEmpty()) {
+            String key = jwtProperties.getBlacklistPrefix() + jti;
+            long ttl = jwtProperties.getAccessTokenExpiration();
 
-        // 남은 유효시간이 0보다 큰 경우에만 블랙리스트 등록 (이미 만료된 토큰은 블랙리스트에 등록할 필요 없음)
-        if(remainingMillisSeconds>0) {
-            String key=jwtProperties.getBlacklistPrefix()+jti;
-            redisTemplate.opsForValue().set(key, "clear", remainingMillisSeconds, TimeUnit.MILLISECONDS);
+            redisTemplate.opsForValue().set(key, "role-changed", ttl, TimeUnit.MILLISECONDS);
+            log.info("권한 변경으로 AccessToken(JTI: {}) 즉시 만료 처리 완료 (TTL: {}ms)", jti, ttl);
         }
-
-        log.info("액세스 토큰 블랙리스트 등록: {}, 남은 유효 기간: {}ms", jti, remainingMillisSeconds);
     }
-
 
     //토큰 재발급
     @Override

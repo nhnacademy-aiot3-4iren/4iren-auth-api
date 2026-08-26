@@ -1,6 +1,6 @@
 package com.nhnacademy.userauthapi.controller;
 
-import com.nhnacademy.userauthapi.config.JwtProperties;
+import com.nhnacademy.userauthapi.config.properties.JwtProperties;
 import com.nhnacademy.userauthapi.dto.token.TokenResponse;
 
 import com.nhnacademy.userauthapi.dto.login.LoginRequest;

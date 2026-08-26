@@ -14,7 +14,7 @@ public class RoleChangeMessageListener {
 
     private final AuthService authService;
 
-    @RabbitListener(queues = "${rabbitmq.account.role-change.queue:auth.account.role-change.queue}")
+    @RabbitListener(queues = "${rabbitmq.account.role-change.queue:4iren.auth.account.role-change.queue}")
     public void handleAccountRoleChangeEvent(RoleChangeMessage message) {
         String jti = message.jti();
         Long userId = message.userId();

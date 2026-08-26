@@ -1,7 +1,7 @@
 package com.nhnacademy.userauthapi.service.impl;
 
 import com.nhnacademy.userauthapi.client.AccountClient;
-import com.nhnacademy.userauthapi.config.JwtProperties;
+import com.nhnacademy.userauthapi.config.properties.JwtProperties;
 import com.nhnacademy.userauthapi.config.JwtProvider;
 import com.nhnacademy.userauthapi.dto.token.TokenResponse;
 import com.nhnacademy.userauthapi.dto.login.LoginRequest;

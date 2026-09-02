@@ -37,7 +37,6 @@ public class AuthServiceImpl implements AuthService {
         try {
             resp = accountClient.login(req).getBody();
         } catch (FeignException.NotFound | FeignException.BadRequest | FeignException.Unauthorized e) {
-            log.error("Login failed from account-api: {}", e.getMessage());
             throw new LoginFailException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
 

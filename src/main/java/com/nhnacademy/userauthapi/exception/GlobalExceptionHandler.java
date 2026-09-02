@@ -16,7 +16,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(LoginFailException.class)
     public ResponseEntity<ErrorResponse> handleLoginFailException(LoginFailException ex) {
-        log.error("LoginFailException: {}", ex.getMessage());
+        log.warn("LoginFailException: {}", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ErrorResponse.of(HttpStatus.NOT_FOUND.value(), ex.getMessage())
@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(RefreshTokenValidateException.class)
     public ResponseEntity<ErrorResponse> handleRefreshTokenValidateException(RefreshTokenValidateException ex) {
-        log.error("RefreshTokenValidateException: {}", ex.getMessage());
+        log.warn("RefreshTokenValidateException: {}", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 ErrorResponse.of(HttpStatus.UNAUTHORIZED.value(), ex.getMessage())

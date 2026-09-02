@@ -7,6 +7,7 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
@@ -42,12 +43,12 @@ public class RabbitConfig {
     }
 
     @Bean
-    public TopicExchange accountExchange() {
-        return new TopicExchange(accountProperties.getExchange());
+    public DirectExchange accountExchange() {
+        return new DirectExchange(accountProperties.getExchange());
     }
 
     @Bean
-    public Binding bindingAccountQueue(Queue accountQueue, TopicExchange accountExchange) {
+    public Binding bindingAccountQueue(Queue accountQueue, DirectExchange accountExchange) {
         return BindingBuilder.bind(accountQueue).to(accountExchange).with(accountProperties.getRoutingKey());
     }
 

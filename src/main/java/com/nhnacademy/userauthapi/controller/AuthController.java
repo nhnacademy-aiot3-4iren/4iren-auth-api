@@ -1,6 +1,7 @@
 package com.nhnacademy.userauthapi.controller;
 
 import com.nhnacademy.userauthapi.config.properties.JwtProperties;
+import com.nhnacademy.userauthapi.controller.api.AuthApi;
 import com.nhnacademy.userauthapi.dto.token.TokenResponse;
 
 import com.nhnacademy.userauthapi.dto.login.LoginRequest;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 //로그인, 로그아웃, 토큰 갱신 등의 인증 관련 API를 제공하는 컨트롤러
 @RestController
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController implements AuthApi {
 
     private final AuthService authService;
     private final JwtProperties jwtProperties;
@@ -24,6 +25,7 @@ public class AuthController {
     @Value("${app.cookie.secure:false}")
     private boolean isSecureCookie;
     
+    @Override
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest req)
     {
@@ -46,6 +48,7 @@ public class AuthController {
                 .body(resp); //엑세스 토큰은 응답 본문에 담아서 전달
     }
 
+    @Override
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestHeader("Authorization") String authHeader)
     {
@@ -71,6 +74,7 @@ public class AuthController {
     }
 
     //리프레시 토큰을 이용한 엑세스 토큰 갱신-> 리프레시 토큰은 HttpOnly 쿠키에서 읽어서 사용
+    @Override
     @PostMapping("/refresh")
     public ResponseEntity<TokenResponse> refreshToken(@CookieValue(value = "refreshToken",required = false) String refreshToken)
     {

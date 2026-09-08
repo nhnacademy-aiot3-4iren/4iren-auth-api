@@ -74,7 +74,7 @@ jobs:
           retry_wait_seconds: 5  # 실패하면 5초 쉬었다가 다시 시도
           command: >
             ./mvnw clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-            -Djacoco.haltOnFailure=false
+            -Djacoco.haltOnFailure=true
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} 
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
             -Dsonar.projectKey=${{ env.PROJECT_KEY }}

@@ -21,12 +21,19 @@ jobs:
 
     steps:
       - name: Telegram으로 PR 알림 보내기
-        # PR을 처음 생성하거나 리뷰어를 지정했을 때만 텔레그램 알림 전송
         if: github.event.action == 'opened' || github.event.action == 'review_requested'
-        uses: F2had/pr-telegram-action@v1.0.0
+        uses: appleboy/telegram-action@master
         with:
-          bot_token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            🔔 PR 생성 알림
+
+            📝 제목: ${{ github.event.pull_request.title }}
+            👤 작성자: ${{ github.event.pull_request.user.login }}
+            🌿 브랜치: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
+
+            🔗 PR 링크: ${{ github.event.pull_request.html_url }}
 
       - name: 코드 가져오기
         uses: actions/checkout@v3

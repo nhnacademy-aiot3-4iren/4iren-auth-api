@@ -16,7 +16,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(LoginFailException.class)
     public ResponseEntity<ErrorResponse> handleLoginFailException(LoginFailException ex) {
-        log.error("LoginFailException: {}", ex.getMessage());
+        log.warn("LoginFailException: {}", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ErrorResponse.of(HttpStatus.NOT_FOUND.value(), ex.getMessage())

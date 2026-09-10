@@ -20,8 +20,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Telegram으로 PR 알림 보내기
-        if: github.event.action == 'opened' || github.event.action == 'review_requested'
+      # PR이 처음 생성되었을 때 알림
+      - name: Telegram으로 PR 생성 알림 보내기
+        if: github.event.action == 'opened'
         uses: appleboy/telegram-action@master
         continue-on-error: true
         with:
@@ -32,6 +33,24 @@ jobs:
 
             📝 제목: ${{ github.event.pull_request.title }}
             👤 작성자: ${{ github.event.pull_request.user.login }}
+            🌿 브랜치: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
+
+            🔗 PR 링크: ${{ github.event.pull_request.html_url }}
+
+      # 리뷰어가 지정(요청)되었을 때 알림
+      - name: Telegram으로 리뷰 요청 알림 보내기
+        if: github.event.action == 'review_requested'
+        uses: appleboy/telegram-action@master
+        continue-on-error: true
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            👀 PR 리뷰 알림
+
+            📝 제목: ${{ github.event.pull_request.title }}
+            🙋‍♂️ 요청한 사람: ${{ github.event.sender.login }}
+            🎯 지정된 리뷰어: @${{ github.event.requested_reviewer.login }}
             🌿 브랜치: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
 
             🔗 PR 링크: ${{ github.event.pull_request.html_url }}
